@@ -8,3 +8,8 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+###Read in Data
+```{r, echo=TRUE}
+mmm = read.table("~/Documents/Stocks/mmm.us.txt", sep=",", header=TRUE)
+mmm
+```
