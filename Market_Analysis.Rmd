@@ -11,5 +11,14 @@ knitr::opts_chunk$set(echo = TRUE)
 ###Read in Data
 ```{r, echo=TRUE}
 mmm = read.table("../Stocks/mmm.us.txt", sep=",", header=TRUE)
+
+mmm[3] <- NULL
+mmm[3] <- NULL
+mmm[4] <- NULL
+mmm[4] <- NULL
 mmm
+mmm$Return <- (mmm$Open - mmm$Close)/mmm$Close
+mmm_open <- mmm[which(mmm$Date == "2005-03-01"),]$Open 
+mmm_close <- mmm[which(mmm$Date == "2005-04-01"),]$Close
+mmm_2005 <- (mmm_close-mmm_open)/mmm_close
 ```
