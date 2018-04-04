@@ -10,6 +10,6 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 ###Read in Data
 ```{r, echo=TRUE}
-mmm = read.table("~/Documents/Stocks/mmm.us.txt", sep=",", header=TRUE)
+mmm = read.table("../Stocks/mmm.us.txt", sep=",", header=TRUE)
 mmm
 ```
