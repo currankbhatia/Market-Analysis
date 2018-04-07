@@ -70,9 +70,6 @@ stocks_2005[[4]]
 ```
 
 ```{r, echo=TRUE}
-array = c("mmm")
-stocks_2005 = list()
-
 stock = read.table(dir2, sep=",", header=TRUE)
 for (i in 1:length(array)) {
   stock_close_03 <- stock[which(stock$Date == "2005-03-01"),]$Close 
@@ -82,9 +79,6 @@ stock_close_03
 ```
 
 ```{r, echo=TRUE}
-array = c("aapl")
-stocks_2005 = list()
-
 rets = numeric(100)
 names = c()
 
@@ -122,7 +116,7 @@ for (i in 1:18) {
 #   
  }
 # 
- return2005 = data.frame(rets, names)
+return2005 = data.frame(rets, names)
 # 
  return2005
 # 
