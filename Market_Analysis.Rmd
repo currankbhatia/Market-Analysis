@@ -1,6 +1,6 @@
 ---
 title: "Market Analysis"
-author: "Curran Bhatia"
+author: "Curran Bhatia, Anupriya Tripathi, Krti Tallam, Nick Favale, Aaron Gilbert"
 date: "4/4/2018"
 output: html_document
 ---
