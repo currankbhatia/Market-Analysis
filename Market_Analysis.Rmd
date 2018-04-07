@@ -15,130 +15,125 @@ library(stringr)
 library(readr)
 ```
 
-###Read in Data
+### Read in Data
 ```{r, echo=TRUE}
 
-# array of stocks data
-snp = read_csv("Stocks.csv")
-arr100 = snp$Symbol[1:100]
-sec100 = snp$Sector[1:100]
-
-array = arr100  #c("mmm", "aapl")
-
-
-stocks_2005 = list()
-
-for (i in 1:length(array)) {
+readInStocks = function(n) {
+  # Gives n random stocks from the S & P 500
+  # 
+  # Args:
+  #   n: Number of stocks to be read
+  # 
+  # Returns:
+  #   List of dataframes with each stock's close value for each day
   
-  dir = c("../Stocks/", as.character(array[i]), ".us.txt")
+  snp = read_csv("Stocks.csv")
   
-  dir2 = str_c(dir, collapse = "")
-  print(dir2)
-  if(!file.exists(dir2)) {
-    next
+  nums = sample(1:500, n)
+  arr100 = snp$Symbol[nums]
+  sec100 = snp$Sector[nums]
+  
+  array = arr100
+  
+  
+  stocks_2005 = list()
+  
+  for (i in 1:n) {
+    
+    dir = c("../Stocks/", as.character(array[i]), ".us.txt")
+    
+    dir2 = str_c(dir, collapse = "")
+    print(dir2)
+    if(!file.exists(dir2)) {
+      next
+    }
+    stock = read.table(dir2, sep=",", header=TRUE)
+    stock[3] <- NULL
+    stock[3] <- NULL
+    stock[4] <- NULL
+    stock[4] <- NULL
+    stock[2] <- NULL
+  
+    stock$name <- array[i]
+    stocks_2005[[i]] <- stock
+    
   }
-  stock = read.table(dir2, sep=",", header=TRUE)
-  stock[3] <- NULL
-  stock[3] <- NULL
-  stock[4] <- NULL
-  stock[4] <- NULL
-  stock[2] <- NULL
 
-  stock_close_03 <- stock[which(stock$Date == "2005-03-01"),]$Close
-  stock_close_04 <- stock[which(stock$Date == "2005-04-01"),]$Close
-  s_2005 <- (stock_close_03-stock_close_04)/stock_close_04
+  return(stocks_2005)
 
-  data1 = data.frame(stock_close_03)
-
-  #stock_close_03 <- stock[which(stock$Date == "2005-03-01"),]$Close 
-  #stock_close_04 <- stock[which(stock$Date == "2005-04-01"),]$Close
-  #s_2005 <- (stock_close_03-stock_close_04)/stock_close_04
-  
-  #data1 = data.frame(stock_close_03)
-  
-  stock$name <- array[i]
-  
-  stocks_2005[[i]] <- stock
-  
-  stock
-  
 }
 
-stocks_2005[[1]]
-stocks_2005[[2]]
-stocks_2005[[4]]
+
 ```
 
+
+### Read Difference
 ```{r, echo=TRUE}
-array = c("mmm")
-stocks_2005 = list()
 
-stock = read.table(dir2, sep=",", header=TRUE)
-for (i in 1:length(array)) {
-  stock_close_03 <- stock[which(stock$Date == "2005-03-01"),]$Close 
-  stock_close_03$name <- array[i]
+closeDiffPct = function(n, firstDate, secondDate, stocks_2005) {
+  # Gives difference in close values from firstDate to secondDate
+  # 
+  # Args:
+  #   n: Number of stocks to be read that are in stocks_2005
+  #   firstDate: The first Date
+  #   seconDate: The second Date
+  #   stocks_2005: List of stock dataframes
+  # 
+  # Returns:
+  #   A dataframe with the difference in percentage of close values, 
+  #   with the stock name next to it
+  
+  
+  rets = numeric(n)
+  names = c()
+  
+  
+  
+  for (i in 1:n) {
+     stock_df = stocks_2005[[i]]
+     stock_df$Date = as.character(stock_df$Date)
+     firstN = which(stock_df$Date == firstDate)
+     secondN = which(stock_df$Date == secondDate)
+     #print(firstN)
+     #print(secondN)
+     
+     if ((is.integer(firstN) && length(firstN) == 0) | 
+         (is.integer(secondN) && length(secondN) == 0)) {
+       
+       names = c("", names)
+       next
+     }
+  
+     stock_close_03 <- stock_df[firstN,]$Close 
+     stock_close_04 <- stock_df[secondN,]$Close
+     s_2005 <- (stock_close_04-stock_close_03)/stock_close_03
+     
+     #print(s_2005)
+     rets[i] = s_2005
+     names = c(stock_df$name[1], names)
+  }
+  
+   return2005 = data.frame(rets, names)
+   return2005
+   
+   return(return2005)
+    
 }
-stock_close_03
+
+
 ```
 
-```{r, echo=TRUE}
-array = c("aapl")
-stocks_2005 = list()
 
-rets = numeric(100)
-names = c()
-
-for (i in 1:18) {
-#   
-   stock_df = stocks_2005[[i]]
-#   
-   stock_df$Date = as.character(stock_df$Date)
-#   
-#   
-#   
-   firstN = which(stock_df$Date == "2005-03-01")
-   secondN = which(stock_df$Date == "2005-04-01")
-#   
-   print(firstN)
-   print(secondN)
-#   
-   if ((is.integer(firstN) && length(firstN) == 0) | 
-       (is.integer(secondN) && length(secondN) == 0)) {
-     next
-   }
-    # if (firstN == 0 | secondN == 0) {
-    #   next
-    # }
-#   
-   stock_close_03 <- stock_df[firstN,]$Close 
-   stock_close_04 <- stock_df[secondN,]$Close
-   s_2005 <- (stock_close_03-stock_close_04)/stock_close_04
-#   
-   print(s_2005)
-#   
-   rets[i] = s_2005
-   names = c(stock_df$name[1], names)
-#   
-#   
- }
-# 
- return2005 = data.frame(rets, names)
-# 
- return2005
-# 
-
-stock = read.table(dir2, sep=",", header=TRUE)
-for (i in 1:length(array)) {
-  stock_close_03 <- stock[which(stock$Date == "2005-03-01"),]$Close 
-  stock_close_03$name <- array[i]
-}
-stock_close_03
-```
-
+### Run Code
 ```{r}
-# array of stocks data
-snp = read_csv("Stocks.csv")
-arr100 = snp$Symbol[1:100]
-sec100 = snp$Sector[1:100]
+
+#Run code
+stocks = readInStocks(5)
+readValues = closeDiffPct(5, "2005-03-01", "2005-04-01", stocks)
+readValues
+
 ```
+
+
+
 
