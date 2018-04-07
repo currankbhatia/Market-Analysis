@@ -127,6 +127,8 @@ closeDiffPct = function(n, firstDate, secondDate, stocks_2005) {
 ### Run Code
 ```{r}
 
+set.seed(679)
+
 #Run code
 stocks = readInStocks(5)
 readValues = closeDiffPct(5, "2005-03-01", "2005-04-01", stocks)
