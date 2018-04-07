@@ -120,60 +120,7 @@ closeDiffPct = function(n, firstDate, secondDate, stocks_2005) {
     
 }
 
-<<<<<<< HEAD
 
-=======
-```{r, echo=TRUE}
-
-rets = numeric(100)
-names = c()
-
-for (i in 1:18) {
-#   
-   stock_df = stocks_2005[[i]]
-#   
-   stock_df$Date = as.character(stock_df$Date)
-#   
-#   
-#   
-   firstN = which(stock_df$Date == "2005-03-01")
-   secondN = which(stock_df$Date == "2005-04-01")
-#   
-   print(firstN)
-   print(secondN)
-#   
-   if ((is.integer(firstN) && length(firstN) == 0) | 
-       (is.integer(secondN) && length(secondN) == 0)) {
-     next
-   }
-    # if (firstN == 0 | secondN == 0) {
-    #   next
-    # }
-#   
-   stock_close_03 <- stock_df[firstN,]$Close 
-   stock_close_04 <- stock_df[secondN,]$Close
-   s_2005 <- (stock_close_03-stock_close_04)/stock_close_04
-#   
-   print(s_2005)
-#   
-   rets[i] = s_2005
-   names = c(stock_df$name[1], names)
-#   
-#   
- }
-# 
- return2005 = data.frame(rets, names)
-# 
- return2005
-# 
-
-stock = read.table(dir2, sep=",", header=TRUE)
-for (i in 1:length(array)) {
-  stock_close_03 <- stock[which(stock$Date == "2005-03-01"),]$Close 
-  stock_close_03$name <- array[i]
-}
-stock_close_03
->>>>>>> origin/master
 ```
 
 
