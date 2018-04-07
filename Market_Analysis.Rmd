@@ -49,6 +49,12 @@ for (i in 1:length(array)) {
   s_2005 <- (stock_close_03-stock_close_04)/stock_close_04
 
   data1 = data.frame(stock_close_03)
+
+  #stock_close_03 <- stock[which(stock$Date == "2005-03-01"),]$Close 
+  #stock_close_04 <- stock[which(stock$Date == "2005-04-01"),]$Close
+  #s_2005 <- (stock_close_03-stock_close_04)/stock_close_04
+  
+  #data1 = data.frame(stock_close_03)
   
   stock$name <- array[i]
   
@@ -58,15 +64,31 @@ for (i in 1:length(array)) {
   
 }
 
-
+stocks_2005[[1]]
+stocks_2005[[2]]
 stocks_2005[[4]]
+```
 
+```{r, echo=TRUE}
+array = c("mmm")
+stocks_2005 = list()
+
+stock = read.table(dir2, sep=",", header=TRUE)
+for (i in 1:length(array)) {
+  stock_close_03 <- stock[which(stock$Date == "2005-03-01"),]$Close 
+  stock_close_03$name <- array[i]
+}
+stock_close_03
+```
+
+```{r, echo=TRUE}
+array = c("aapl")
+stocks_2005 = list()
 
 rets = numeric(100)
 names = c()
-colnames(return2005) = c("return", "name") # return2005 not defined
 
- for (i in 1:18) {
+for (i in 1:18) {
 #   
    stock_df = stocks_2005[[i]]
 #   
@@ -105,6 +127,12 @@ colnames(return2005) = c("return", "name") # return2005 not defined
  return2005
 # 
 
+stock = read.table(dir2, sep=",", header=TRUE)
+for (i in 1:length(array)) {
+  stock_close_03 <- stock[which(stock$Date == "2005-03-01"),]$Close 
+  stock_close_03$name <- array[i]
+}
+stock_close_03
 ```
 
 ```{r}
