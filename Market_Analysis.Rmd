@@ -130,12 +130,29 @@ closeDiffPct = function(n, firstDate, secondDate, stocks_2005) {
 set.seed(679)
 
 #Run code
-stocks = readInStocks(5)
-readValues = closeDiffPct(5, "2005-03-01", "2005-04-01", stocks)
+stocks = readInStocks(500)
+readValues = closeDiffPct(500, "2005-03-01", "2005-04-01", stocks)
 readValues
 
 ```
 
-
-
+###Graph Data
+```{r}
+hist(readValues$rets)
+mean(readValues$rets)
+var(readValues$rets)
+```
+###Prior
+```{r}
+theta <- 0
+var1 <- 1
+alpha <- 1
+beta <- 1
+g_prior = function(x, theta, var1, alpha, beta) {
+  return(dnorm(x, theta, var1)*1/dgamma(x, alpha, beta))
+}
+x <- rnorm(50)
+g_prior(x, theta, var1, alpha, beta)
+plot(x)
+```
 
