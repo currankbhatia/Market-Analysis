@@ -145,4 +145,23 @@ Likelihood function: $$L({\mu},{\sigma^2};x_1,...,x_n) = (2\pi{\sigma^2})^{-n/2}
 Posterior distribution: $$g(\theta,\sigma^2 | x_i) = L({\mu},{\sigma^2};x_1,...,x_n) * g({\theta},{\sigma^2})$$
 
 
+###Graph Data
+```{r}
+hist(readValues$rets)
+mean(readValues$rets)
+var(readValues$rets)
+```
+###Prior
+```{r}
+theta <- 0
+var1 <- 1
+alpha <- 1
+beta <- 1
+g_prior = function(x, theta, var1, alpha, beta) {
+  return(dnorm(x, theta, var1)*1/dgamma(x, alpha, beta))
+}
+x <- rnorm(50)
+g_prior(x, theta, var1, alpha, beta)
+plot(x)
+```
 
