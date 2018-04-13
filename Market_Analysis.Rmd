@@ -130,8 +130,8 @@ closeDiffPct = function(n, firstDate, secondDate, stocks_2005) {
 set.seed(679)
 
 #Run code
-stocks = readInStocks(5)
-readValues = closeDiffPct(5, "2005-03-01", "2005-04-01", stocks)
+stocks = readInStocks(50)
+readValues = closeDiffPct(50, "2005-03-01", "2005-04-01", stocks)
 readValues
 hist(readValues$rets)
 mu = mean(readValues$rets)
@@ -143,6 +143,7 @@ var
 Prior distribution: $$g({\theta},{\sigma^2}) = Normal() * InverseGamma() $$
 Likelihood function: $$L({\mu},{\sigma^2};x_1,...,x_n) = (2\pi{\sigma^2})^{-n/2}  exp({-1/{2\sigma^2}}) \sum\limits_{j=1}^n (x_j - \mu)^2$$
 Posterior distribution: $$g(\theta,\sigma^2 | x_i) = L({\mu},{\sigma^2};x_1,...,x_n) * g({\theta},{\sigma^2})$$
+
 
 
 ###Graph Data
@@ -160,8 +161,39 @@ beta <- 1
 g_prior = function(x, theta, var1, alpha, beta) {
   return(dnorm(x, theta, var1)*1/dgamma(x, alpha, beta))
 }
-x <- rnorm(50)
+x <- rnorm(50)   # Must change to rnorm(500)
 g_prior(x, theta, var1, alpha, beta)
 plot(x)
 ```
+
+
+
+Prior distribution: $$g({\theta},{\sigma^2}) = Normal() * InverseGamma() $$
+Likelihood function: $$L({\mu},{\sigma^2};x_1,...,x_n) = (2\pi{\sigma^2})^{-n/2}  exp({-1/{2\sigma^2}} \sum\limits_{j=1}^n (x_j - \mu)^2)$$
+Posterior distribution: $$g(\theta,\sigma^2 | x_i) = L({\mu},{\sigma^2};x_1,...,x_n) * g({\theta},{\sigma^2})$$
+
+
+###Making a Posterior
+```{r}
+IndexStart <- 1
+mu <- 1  # are these correct values??
+sigma2 <- 0  # are these correct values??
+n <- 50
+x <- seq(IndexStart, 50, 1)
+L = function(mu, sigma2, n, x){
+  return((2*pi*sigma2)^(-n/2))*exp(-1/2*sigma2*sum(x - mu)^2)
+}
+
+rets = readValues$rets
+
+posterior = L(mean(rets),var(rets), n, rets) * g_prior(x, theta, var1, alpha, beta)
+post = posterior[posterior!= 0]
+
+hist(post, xlim = c(-0.1,40), ylim = c(0,50))
+
+gp = g_prior(x, theta, var1, alpha, beta)
+
+
+```
+
 
