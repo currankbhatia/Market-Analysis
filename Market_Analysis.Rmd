@@ -130,8 +130,8 @@ closeDiffPct = function(n, firstDate, secondDate, stocks_2005) {
 set.seed(679)
 
 #Run code
-stocks = readInStocks(50)
-readValues = closeDiffPct(50, "2005-03-01", "2005-04-01", stocks)
+stocks = readInStocks(250)
+readValues = closeDiffPct(250, "2005-03-01", "2005-06-01", stocks)
 readValues
 hist(readValues$rets)
 mu = mean(readValues$rets)
@@ -156,35 +156,50 @@ var(readValues$rets)
 ```{r}
 theta <- 0
 var1 <- 1
-alpha <- 1
+alpha <- 3
 beta <- 1
 g_prior = function(x, theta, var1, alpha, beta) {
-  return(dnorm(x, theta, var1)*1/dgamma(x, alpha, beta))
+  #return(dnorm(x, theta, var1)*dgamma(x, alpha, beta))
+  #x <- seq(-1,1,.01)
+  return(dnorm(x)*1)
 }
-x <- rnorm(50)   # Must change to rnorm(500)
+#x <- rnorm(250)   # Must change to rnorm(500)
+x <- seq(-1,1,.01)
 hist(g_prior(x, theta, var1, alpha, beta))
-plot(x)
+gp = g_prior(x, theta, var1, alpha, beta)
+plot(x,gp)
 ```
-
-
-Prior distribution: $$g({\theta},{\sigma^2}) = Normal() * InverseGamma() $$
-Likelihood function: $$L({\mu},{\sigma^2};x_1,...,x_n) = (2\pi{\sigma^2})^{-n/2}  exp({-1/{2\sigma^2}} \sum\limits_{j=1}^n (x_j - \mu)^2)$$
-Posterior distribution: $$g(\theta,\sigma^2 | x_i) = L({\mu},{\sigma^2};x_1,...,x_n) * g({\theta},{\sigma^2})$$
 
 
 ###Making a Posterior
 ```{r}
-IndexStart <- 1
-mu <- 1  # are these correct values??
-sigma2 <- 0  # are these correct values??
-n <- 50
-x <- readValues$rets
+#IndexStart <- 1
+#mu <- 0  # are these correct values??
+#sigma2 <- 0  # are these correct values??
+n <- 250
+#x <- rnorm(250)
 L = function(mu, sigma2, n, x){
-  return((2*pi*sigma2)^(-n/2))*exp(-1/2*sigma2*sum((x - mu)^2))
+  first = (2*pi*sigma2)^(-n/2)
+  second = exp((-1/(2*sigma2))*sum((x - mu)^2))
+  return(first*second)
 }
 
 rets = readValues$rets
 
-posterior = L(mean(rets),var(rets), n, rets) * g_prior(x, theta, var1, alpha, beta)
-hist(posterior)
+gp = g_prior(x, theta, var1, alpha, beta)
+theta2 = mean(rets) #1
+var2 = var(rets) #1
+posterior = L(theta2,var2, n, rets) * g_prior(x, theta, var1, alpha, beta)
+plot(posterior)
+mean(posterior)
+
+c = L(theta2,var2,n,rets) * g_prior(rnorm(250),theta,var1,alpha,beta)
+C = mean(c)
+temp1 = (posterior/C)
+hist(temp1)
+temp = (posterior/C)*rnorm(250)
+temp
+plot(seq(-1,1, length.out = length(temp)),temp)
+hist(temp)
+plot(seq(-1,1, length.out = length(posterior)),posterior/C)
 ```
