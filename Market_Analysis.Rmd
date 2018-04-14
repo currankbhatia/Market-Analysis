@@ -141,7 +141,7 @@ var
 ```
 
 Prior distribution: $$g({\theta},{\sigma^2}) = Normal() * InverseGamma() $$
-Likelihood function: $$L({\mu},{\sigma^2};x_1,...,x_n) = (2\pi{\sigma^2})^{-n/2}  exp({-1/{2\sigma^2}}) \sum\limits_{j=1}^n (x_j - \mu)^2$$
+Likelihood function: $$L({\mu},{\sigma^2};x_1,...,x_n) = (2\pi{\sigma^2})^{-n/2}  exp({-1/{2\sigma^2}} \sum\limits_{j=1}^n (x_j - \mu)^2)$$
 Posterior distribution: $$g(\theta,\sigma^2 | x_i) = L({\mu},{\sigma^2};x_1,...,x_n) * g({\theta},{\sigma^2})$$
 
 
@@ -164,4 +164,5 @@ x <- rnorm(50)
 g_prior(x, theta, var1, alpha, beta)
 plot(x)
 ```
+
 
