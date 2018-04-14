@@ -162,7 +162,7 @@ g_prior = function(x, theta, var1, alpha, beta) {
   return(dnorm(x, theta, var1)*1/dgamma(x, alpha, beta))
 }
 x <- rnorm(50)   # Must change to rnorm(500)
-g_prior(x, theta, var1, alpha, beta)
+hist(g_prior(x, theta, var1, alpha, beta))
 plot(x)
 ```
 
@@ -178,19 +178,13 @@ IndexStart <- 1
 mu <- 1  # are these correct values??
 sigma2 <- 0  # are these correct values??
 n <- 50
-x <- seq(IndexStart, 50, 1)
+x <- readValues$rets
 L = function(mu, sigma2, n, x){
-  return((2*pi*sigma2)^(-n/2))*exp(-1/2*sigma2*sum(x - mu)^2)
+  return((2*pi*sigma2)^(-n/2))*exp(-1/2*sigma2*sum((x - mu)^2))
 }
 
 rets = readValues$rets
 
 posterior = L(mean(rets),var(rets), n, rets) * g_prior(x, theta, var1, alpha, beta)
-post = posterior[posterior!= 0]
-
-hist(post, xlim = c(-0.1,40), ylim = c(0,50))
-
-gp = g_prior(x, theta, var1, alpha, beta)
-
-
+hist(posterior)
 ```
