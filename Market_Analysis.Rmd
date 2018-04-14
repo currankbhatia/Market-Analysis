@@ -163,6 +163,7 @@ g_prior = function(x, theta, var1, alpha, beta) {
   #x <- seq(-1,1,.01)
   return(dnorm(x)*1)
 }
+
 #x <- rnorm(250)   # Must change to rnorm(500)
 x <- seq(-1,1,.01)
 hist(g_prior(x, theta, var1, alpha, beta))
@@ -202,4 +203,5 @@ temp
 plot(seq(-1,1, length.out = length(temp)),temp)
 hist(temp)
 plot(seq(-1,1, length.out = length(posterior)),posterior/C)
+
 ```
