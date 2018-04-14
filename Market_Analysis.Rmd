@@ -163,6 +163,7 @@ g_prior = function(x, theta, var1, alpha, beta) {
 }
 x <- rnorm(50)   # Must change to rnorm(500)
 prior = g_prior(x, theta, var1, alpha, beta)
+hist(g_prior(x, theta, var1, alpha, beta))
 plot(x)
 hist(prior)
 ```
@@ -179,7 +180,7 @@ IndexStart <- 1
 mu <- 1  # are these correct values??
 sigma2 <- 0  # are these correct values??
 n <- 50
-x <- seq(IndexStart, 50, 1)
+x <- readValues$rets
 L = function(mu, sigma2, n, x){
   return((2*pi*sigma2)^(-n/2))*exp(-1/2*sigma2*sum((x - mu)^2))
 }
