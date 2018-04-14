@@ -127,17 +127,16 @@ closeDiffPct = function(n, firstDate, secondDate, stocks_2005) {
 ### Run Code
 ```{r}
 
-set.seed(679)
+#set.seed(679)
 
 #Run code
-stocks = readInStocks(50)
-readValues = closeDiffPct(50, "2005-03-01", "2005-04-01", stocks)
-readValues
-hist(readValues$rets)
-mu = mean(readValues$rets)
-var = var(readValues$rets)
-mu
-var
+# stocks = readInStocks(250)
+# readValues = closeDiffPct(250, "2005-03-01", "2005-06-01", stocks)
+# readValues
+# hist(readValues$rets)
+# mean(readValues$rets)
+# var(readValues$rets)
+
 ```
 
 Prior distribution: $$g({\theta},{\sigma^2}) = Normal() * InverseGamma() $$
@@ -148,51 +147,79 @@ Posterior distribution: $$g(\theta,\sigma^2 | x_i) = L({\mu},{\sigma^2};x_1,...,
 
 ###Graph Data
 ```{r}
-hist(readValues$rets)
-mean(readValues$rets)
-var(readValues$rets)
+# hist(readValues$rets)
+# mean(readValues$rets)
+# var(readValues$rets)
 ```
 ###Prior
 ```{r}
-theta <- 0
-var1 <- 1
-alpha <- 1
-beta <- 1
-g_prior = function(x, theta, var1, alpha, beta) {
-  return(dnorm(x, theta, var1)*1/dgamma(x, alpha, beta))
+
+g_prior = function(x = seq(-1,1,.01), theta = 0, var1 = 1, alpha = 3, beta = 1) {
+  #return(dnorm(x, theta, var1)*dgamma(x, alpha, beta))
+  return(dnorm(x)*1)
 }
-x <- rnorm(50)   # Must change to rnorm(500)
-prior = g_prior(x, theta, var1, alpha, beta)
+
+```
+
+```{r}
+x <- seq(-1,1,.01)
 hist(g_prior(x, theta, var1, alpha, beta))
-plot(x)
-hist(prior)
+gp = g_prior(x, theta, var1, alpha, beta)
+plot(x,gp)
 ```
 
 
-Prior distribution: $$g({\theta},{\sigma^2}) = Normal() * InverseGamma() $$
-Likelihood function: $$L({\mu},{\sigma^2};x_1,...,x_n) = (2\pi{\sigma^2})^{-n/2}  exp({-1/{2\sigma^2}} \sum\limits_{j=1}^n (x_j - \mu)^2)$$
-Posterior distribution: $$g(\theta,\sigma^2 | x_i) = L({\mu},{\sigma^2};x_1,...,x_n) * g({\theta},{\sigma^2})$$
 
-
-###Making a Posterior
+###Making First Likelihood Function
 ```{r}
-IndexStart <- 1
-mu <- 1  # are these correct values??
-sigma2 <- 0  # are these correct values??
-n <- 50
-x <- readValues$rets
-L = function(mu, sigma2, n, x){
-  return((2*pi*sigma2)^(-n/2))*exp(-1/2*sigma2*sum((x - mu)^2))
+L = function(x, n, mu = 0, sigma2 = 1){
+  first = (2*pi*sigma2)^(-n/2)
+  second = exp((-1/(2*sigma2))*sum((x - mu)^2))
+  return(first*second)
 }
 
+```
+
+
+### Finding Posterior and Running Code
+```{r}
+set.seed(679)
+
+#Run code
+n = 50
+x = rnorm(n)
+
+# Read in stocks and get values
+stocks = readInStocks(n)
+readValues = closeDiffPct(n, "2005-03-01", "2005-06-01", stocks)
+readValues
+hist(readValues$rets)
+mean(readValues$rets)
+var(readValues$rets)
+
+
+# Get the posterior distribution
 rets = readValues$rets
 
-posterior = L(mean(rets),var(rets), n, rets) * g_prior(x, theta, var1, alpha, beta)
-post = posterior[posterior!= 0]
+theta2 = mean(rets) #1
+var2 = var(rets) #1
+posterior = L(rets, n, theta2,var2) * g_prior(x)
+plot(posterior)
+mean(posterior)
 
-hist(post, xlim = c(-0.1,40), ylim = c(0,50))
+c = L(rets, n, theta2,var2) * g_prior(rnorm(n))
+C = mean(c)
 
-gp = g_prior(x, theta, var1, alpha, beta)
+postC = (posterior/(10*C))*rnorm(n)
+postC
 
-hist(posterior)
+# Plot posterior distribution
+plot(seq(-1,1, length.out = length(postC)),postC)
+hist(postC)
+plot(seq(-1,1, length.out = length(posterior)),posterior/C)
+
+# Compare Posterior dist vs Actual data
+hist(readValues$rets, xlim = c(-0.5, 0.5))
+hist(postC, xlim = c(-0.5, 0.5))
+
 ```
