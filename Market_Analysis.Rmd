@@ -13,12 +13,15 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(stringr)
 library(readr)
+library(dplyr)
 ```
 
 ### Read in Data
 ```{r, echo=TRUE}
 
-readInStocks = function(n) {
+set.seed(222)
+
+readInStocks = function(n, date1 = "2015") {
   # Gives n random stocks from the S & P 500
   # 
   # Args:
@@ -29,18 +32,43 @@ readInStocks = function(n) {
   
   snp = read_csv("Stocks.csv")
   
-  nums = sample(1:500, n)
-  arr100 = snp$Symbol[nums]
-  sec100 = snp$Sector[nums]
+  #nums = sample(1:500, n)
+  #arr100 = snp$Symbol[nums]
+  #sec100 = snp$Sector[nums]
   
-  array = arr100
+   dateN = date1 %>% as.character() %>% substring(1,4) %>% as.numeric()
+   print(dateN)
+  
+  #array = arr100
+  
+  
+  nums = c()
   
   
   stocks_2005 = list()
   
-  for (i in 1:n) {
+  i = 1
+  while (i <= n) {
+  #for (i in 1:n) {
+
+    num = sample(1:500, 1)
     
-    dir = c("../Stocks/", as.character(array[i]), ".us.txt")
+     while (num %in% nums) {
+       num = sample(1:500, 1)
+       
+       if (length(nums) > n) {
+         return(-1)
+       }
+     }
+    
+    arr = snp$Symbol[num]
+    
+    # print("num is")
+    # print(num)
+    # print("i is ")
+    # print(i)
+    
+    dir = c("../Stocks/", as.character(arr), ".us.txt")
     
     dir2 = str_c(dir, collapse = "")
     print(dir2)
@@ -54,14 +82,39 @@ readInStocks = function(n) {
     stock[4] <- NULL
     stock[2] <- NULL
   
-    stock$name <- array[i]
-    stocks_2005[[i]] <- stock
+    stock$name <- arr
     
+    
+
+    
+    beg = stock$Date[1] %>% as.character() %>% substring(1,4) %>% as.numeric()
+    end = stock$Date[length(stock$Date)] %>% as.character() %>% substring(1,4) %>% as.numeric()
+    
+    
+    if (beg > dateN || end < dateN) {
+      
+      i = i-1
+      
+      print("Enters here")
+      
+      #nums = sample(1:500, n)
+      #arr100 = snp$Symbol[nums]
+      #sec100 = snp$Sector[nums]
+    }
+    else {
+      stocks_2005[[i]] <- stock
+    }
+    
+    
+    i = i+1
   }
 
   return(stocks_2005)
 
 }
+
+
+#readInStocks(50) -> vals
 
 
 ```
@@ -119,6 +172,8 @@ closeDiffPct = function(n, firstDate, secondDate, stocks_2005) {
    return(return2005)
     
 }
+
+
 
 
 ```
@@ -223,3 +278,56 @@ hist(readValues$rets, xlim = c(-0.5, 0.5))
 hist(postC, xlim = c(-0.5, 0.5))
 
 ```
+
+
+### Markov Chain
+```{r}
+
+set.seed(100) # do not change seed number and do not change n
+#readInStocks(n)
+
+n = 50
+x = rnorm(n)
+gp = g_prior(x)
+
+
+# DO NOT PICK ANY DAYS ON THE WEEKEND
+# Also, 2015 dates do not seem to work
+dates = c("2005-03-01", "2005-04-01", "2005-05-02", "2005-06-01", "2005-07-01")
+
+
+
+finalPost = gp
+
+for (i in 1:(length(dates) -1)) {
+  
+  #i = 1
+  stocks = readInStocks(n)
+  readValues = closeDiffPct(n, dates[i], dates[i+1], stocks)
+  readValues
+  #hist(readValues$rets)
+  
+  
+  rets = readValues$rets
+
+  theta2 = mean(rets) #1
+  var2 = var(rets) #1
+  like = L(rets, n, theta2,var2)
+  
+  
+  c = L(rets, n, theta2,var2) * g_prior(rnorm(n))
+  C = mean(c)
+  
+  
+  likeC = (like/(10*C))*rnorm(n)
+  
+  finalPost = likeC*finalPost
+  
+  
+}
+
+hist(finalPost)
+
+
+```
+
