@@ -393,3 +393,60 @@ dates = c("2005-03-01", "2006-03-01", "2007-03-01", "2008-03-04")
 
 ```
 
+
+
+###Bootstrap
+```{r}
+T = mean(rets)
+B = 10000
+thetahat = mean(rets)
+thetahatboot = numeric(B)
+for(b in 1:B) {
+  xb = sample(rets, 50, replace = TRUE)
+  thetahatboot[b] = mean(xb)
+}
+sethetahat = sd(thetahatboot)
+sethetahat
+mean(thetahatboot)
+T
+```
+
+
+
+###Jackknife
+```{r}
+library("bootstrap")
+# initialize
+data(law, package = "bootstrap")
+n <- length(rets)
+y <- rets
+B <- 2000
+theta.b <- numeric(B)
+# set up storage for the sampled indices
+indices <- matrix(0, nrow = B, ncol = n)
+# jackknife-after-bootstrap step 1: run the bootstrap
+for (b in 1:B) {
+i <- sample(1:n, size = n, replace = TRUE)
+y <- rets[i]
+theta.b[b] <- mean(y)
+#save the indices for the jackknife
+indices[b,] <- i
+}
+
+
+se.jack <- numeric(n)
+for (i in 1:n) {
+# in i-th replicate omit all samples with x[i]
+keep <- (1:B)[apply(indices, MARGIN = 1,
+FUN = function(k) {!any(k == i)})]
+se.jack[i] <- sd(theta.b[keep])
+}
+
+print(mean(theta.b))
+print(sd(theta.b))
+# print(sqrt((n-1) * mean((se.jack - mean(se.jack))^2)))
+
+print(mean(rets))
+print(sd(rets))
+```
+
