@@ -71,7 +71,7 @@ readInStocks = function(n, date1 = "2015") {
     dir = c("../Stocks/", as.character(arr), ".us.txt")
     
     dir2 = str_c(dir, collapse = "")
-    print(dir2)
+    #print(dir2)
     if(!file.exists(dir2)) {
       next
     }
@@ -95,7 +95,7 @@ readInStocks = function(n, date1 = "2015") {
       
       i = i-1
       
-      print("Enters here")
+      #print("Enters here")
       
       #nums = sample(1:500, n)
       #arr100 = snp$Symbol[nums]
@@ -209,27 +209,27 @@ Posterior distribution: $$g(\theta,\sigma^2 | x_i) = L({\mu},{\sigma^2};x_1,...,
 ###Prior
 ```{r}
 
-g_prior = function(x = seq(-1,1,.01), theta = 0, var1 = 1, alpha = 3, beta = 1) {
-  #return(dnorm(x, theta, var1)*dgamma(x, alpha, beta))
-  return(dnorm(x)*1)
-}
+# g_prior = function(x = seq(-1,1,.01), theta = 0, var1 = 1, alpha = 3, beta = 1) {
+#   #return(dnorm(x, theta, var1)*dgamma(x, alpha, beta))
+#   return(dnorm(x)*1)
+# }
 
 ```
 
 ```{r}
-x <- seq(-1,1,.01)
-hist(g_prior(x, theta, var1, alpha, beta))
-gp = g_prior(x, theta, var1, alpha, beta)
-plot(x,gp)
+# x <- seq(-1,1,.01)
+# hist(g_prior(x, theta, var1, alpha, beta))
+# gp = g_prior(x, theta, var1, alpha, beta)
+# plot(x,gp)
 ```
 
 
 
 ###Making First Likelihood Function
 ```{r}
-L = function(x, n, mu = 0, sigma2 = 1){
+L = function(theta, x, n, sigma2 = 2){
   first = (2*pi*sigma2)^(-n/2)
-  second = exp((-1/(2*sigma2))*sum((x - mu)^2))
+  second = exp((-1/(2*sigma2))*sum((x - theta)^2))
   return(first*second)
 }
 
@@ -240,42 +240,37 @@ L = function(x, n, mu = 0, sigma2 = 1){
 ```{r}
 set.seed(679)
 
-#Run code
-n = 50
-x = rnorm(n)
 
-# Read in stocks and get values
+gprior = function (theta, mu = 0, sigma = 2) {
+  return (dnorm(theta, mu, sigma))
+}
+
+
+
+n = 80
+
+# Get return differences
 stocks = readInStocks(n)
 readValues = closeDiffPct(n, "2005-03-01", "2005-06-01", stocks)
-readValues
-hist(readValues$rets)
-mean(readValues$rets)
-var(readValues$rets)
-
-
-# Get the posterior distribution
 rets = readValues$rets
 
-theta2 = mean(rets) #1
-var2 = var(rets) #1
-posterior = L(rets, n, theta2,var2) * g_prior(x)
-plot(posterior)
-mean(posterior)
 
-c = L(rets, n, theta2,var2) * g_prior(rnorm(n))
+# posterior distribution
+theta = seq(-10, 8, length.out = n)
+gp = gprior(theta)
+Li = L(theta, rets, n)
+post = Li*gp
+
+plot(theta, post)
+
+
+c = L(theta, rets, n) * gprior(rnorm(n))
 C = mean(c)
 
-postC = (posterior/(10*C))*rnorm(n)
-postC
+postC = (post/C)
 
-# Plot posterior distribution
-plot(seq(-1,1, length.out = length(postC)),postC)
-hist(postC)
-plot(seq(-1,1, length.out = length(posterior)),posterior/C)
+plot(theta, postC)
 
-# Compare Posterior dist vs Actual data
-hist(readValues$rets, xlim = c(-0.5, 0.5))
-hist(postC, xlim = c(-0.5, 0.5))
 
 ```
 
@@ -283,50 +278,117 @@ hist(postC, xlim = c(-0.5, 0.5))
 ### Markov Chain
 ```{r}
 
-set.seed(100) # do not change seed number and do not change n
-#readInStocks(n)
+#markov = function (n, dates ) {
 
-n = 50
-x = rnorm(n)
-gp = g_prior(x)
+n= 80
+dates = c("2008-03-04", "2009-03-03", "2010-03-03")
 
 
-# DO NOT PICK ANY DAYS ON THE WEEKEND
-# Also, 2015 dates do not seem to work
+
+  set.seed(679)
+
+
+  # Get return differences
+  theta = seq(-8, 8, length.out = n)
+  
+  
+  finalPost = gprior(theta)
+  
+  list1 = list()
+  
+  for (i in 1:(length(dates)-1)) {
+    
+    #i = 1
+    stocks = readInStocks(n)
+    readValues = closeDiffPct(n, dates[i], dates[i+1], stocks)
+    rets = readValues$rets
+    
+    Li = L(theta, rets, n)
+    
+    c = L(theta, rets, n) * gprior(rnorm(n))
+    C = mean(c)
+  
+  
+    finalPost = finalPost*(Li/C)
+    
+    list1[[i]] = rets
+  
+  }
+  
+  plot(theta, finalPost)
+  
+  # The theta value for the max finalPost
+  maxInd = which.max(finalPost)
+  theta[maxInd]
+  paste("The value of theta for the max value in our final posterior distribution is : ",   theta[maxInd])
+
+#}
+
+
+```
+
+```{r}
+
+#markov = function (n, dates ) {
+
+n= 120
+dates = c("2005-03-01", "2006-03-01", "2007-03-01", "2008-03-04")
+
+
+
+  set.seed(100)
+
+
+  # Get return differences
+  theta = seq(-8, 8, length.out = n)
+  
+  
+  finalPost = gprior(theta)
+  
+  list1 = list()
+  
+  for (i in 1:(length(dates)-1)) {
+    
+    #i = 1
+    stocks = readInStocks(n)
+    readValues = closeDiffPct(n, dates[i], dates[i+1], stocks)
+    rets = readValues$rets
+    
+    Li = L(theta, rets, n)
+    
+    c = L(theta, rets, n) * gprior(rnorm(n))
+    C = mean(c)
+  
+  
+    finalPost = finalPost*(Li/C)
+    
+    list1[[i]] = rets
+  
+  }
+  
+  plot(theta, finalPost)
+  
+  # The theta value for the max finalPost
+  maxInd = which.max(finalPost)
+  theta[maxInd]
+  paste("The value of theta for the max value in our final posterior distribution is : ",   theta[maxInd])
+
+#}
+
+
+```
+
+
+```{r}
+
 dates = c("2005-03-01", "2005-04-01", "2005-05-02", "2005-06-01", "2005-07-01")
+markov(n = 80, dates = dates)
 
+dates = c("2005-03-01", "2006-03-01", "2007-03-01", "2008-03-04")
+markov(n = 80, dates = dates)
 
-
-finalPost = gp
-
-for (i in 1:(length(dates) -1)) {
-  
-  #i = 1
-  stocks = readInStocks(n)
-  readValues = closeDiffPct(n, dates[i], dates[i+1], stocks)
-  readValues
-  #hist(readValues$rets)
-  
-  
-  rets = readValues$rets
-
-  theta2 = mean(rets) #1
-  var2 = var(rets) #1
-  like = L(rets, n, theta2,var2)
-  
-  
-  c = L(rets, n, theta2,var2) * g_prior(rnorm(n))
-  C = mean(c)
-  
-  
-  likeC = (like/(10*C))*rnorm(n)
-  
-  finalPost = likeC*finalPost
-  
-  
-}
-
-hist(finalPost)
+dates = c("2008-03-04", "2009-03-03", "2010-03-03")
+markov(n= 80, dates = dates)
 
 
 ```
