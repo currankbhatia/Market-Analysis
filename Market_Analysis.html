@@ -139,10 +139,10 @@ library(dplyr)</code></pre>
 <pre class="r"><code>set.seed(222)
 
 readInStocks = function(n, date1 = &quot;2015&quot;) {
-  # Gives n random stocks from the S &amp; P 500
+  # Gives n number of random stocks from the S &amp; P 500
   # 
   # Args:
-  #   n: Number of stocks to be read
+  #   n: Number of random stocks to be read
   # 
   # Returns:
   #   List of dataframes with each stock's close value for each day
@@ -182,7 +182,7 @@ readInStocks = function(n, date1 = &quot;2015&quot;) {
     
     # print(&quot;num is&quot;)
     # print(num)
-    # print(&quot;i is &quot;)
+    # print(&quot;i is&quot;)
     # print(i)
     
     dir = c(&quot;../Stocks/&quot;, as.character(arr), &quot;.us.txt&quot;)
@@ -212,7 +212,7 @@ readInStocks = function(n, date1 = &quot;2015&quot;) {
       
       i = i-1
       
-      #print(&quot;Enters here&quot;)
+      #print(&quot;Enters here:&quot;)
       
       #nums = sample(1:500, n)
       #arr100 = snp$Symbol[nums]
@@ -231,7 +231,7 @@ readInStocks = function(n, date1 = &quot;2015&quot;) {
 }
 
 
-#readInStocks(50) -&gt; vals</code></pre>
+#readInStocks(500) -&gt; vals</code></pre>
 </div>
 <div id="read-difference" class="section level3">
 <h3>Read Difference</h3>
@@ -245,7 +245,7 @@ readInStocks = function(n, date1 = &quot;2015&quot;) {
   #   stocks_2005: List of stock dataframes
   # 
   # Returns:
-  #   A dataframe with the difference in percentage of close values, 
+  #   A dataframe with the differences in percentage of close values, 
   #   with the stock name next to it
   
   
