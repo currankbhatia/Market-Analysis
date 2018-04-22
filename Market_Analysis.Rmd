@@ -458,23 +458,30 @@ indices[b,] <- i
 
 
 se.jack <- numeric(n)
+
 for (i in 1:n) {
 # in i-th replicate omit all samples with x[i]
-keep <- (1:B)[apply(indices, MARGIN = 1,
-FUN = function(k) {!any(k == i)})]
-se.jack[i] <- sd(theta.b[keep])
+
+  keep <- (1:B)[apply(indices, MARGIN = 1,
+
+                      FUN = function(k) {!any(k == i)})]
+
+  se.jack[i] <- sd(theta.b[keep])
 }
 
 sumsq = sum((se.jack-mean(se.jack))^2)
+
 sejack = sqrt((n-1)/n)*sqrt(sumsq)
 
 print(sqrt(sejack))
 
 print(mean(theta.b))
+
 print(sd(theta.b))
 # print(sqrt((n-1) * mean((se.jack - mean(se.jack))^2)))
 
 print(mean(rets))
+
 print(sd(rets))
 
 ```
