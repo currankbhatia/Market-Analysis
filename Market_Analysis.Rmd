@@ -396,24 +396,37 @@ dates = c("2005-03-01", "2006-03-01", "2007-03-01", "2008-03-04")
 
 ###Bootstrap
 ```{r}
+
 T = mean(rets)
+
 B = 10000
+
 thetahat = mean(rets)
+
 thetahatboot = numeric(B)
+
 for(b in 1:B) {
-  xb = sample(rets, 50, replace = TRUE)
-  thetahatboot[b] = mean(xb)
+ 
+   xb = sample(rets, 50, replace = TRUE)
+  
+   thetahatboot[b] = mean(xb)
 }
+
 sethetahat = sd(thetahatboot)
+
 sethetahat
+
 mean(thetahatboot)
+
 T
+
 ```
 
 
 
 ###Jackknife
 ```{r}
+
 library("bootstrap")
 # initialize
 #data(law, package = "bootstrap")
@@ -452,5 +465,6 @@ print(sd(theta.b))
 
 print(mean(rets))
 print(sd(rets))
+
 ```
 
