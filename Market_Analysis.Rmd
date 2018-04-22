@@ -25,7 +25,7 @@ readInStocks = function(n, date1 = "2015") {
   # Gives n number of random stocks from the S & P 500
   # 
   # Args:
-  #   n: Number of stocks to be read
+  #   n: Number of random stocks to be read
   # 
   # Returns:
   #   List of dataframes with each stock's close value for each day
@@ -65,7 +65,7 @@ readInStocks = function(n, date1 = "2015") {
     
     # print("num is")
     # print(num)
-    # print("i is ")
+    # print("i is")
     # print(i)
     
     dir = c("../Stocks/", as.character(arr), ".us.txt")
@@ -95,7 +95,7 @@ readInStocks = function(n, date1 = "2015") {
       
       i = i-1
       
-      #print("Enters here")
+      #print("Enters here:")
       
       #nums = sample(1:500, n)
       #arr100 = snp$Symbol[nums]
