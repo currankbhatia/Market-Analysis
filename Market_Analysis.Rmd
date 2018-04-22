@@ -114,7 +114,7 @@ readInStocks = function(n, date1 = "2015") {
 }
 
 
-#readInStocks(50) -> vals
+#readInStocks(500) -> vals
 
 
 ```
@@ -133,7 +133,7 @@ closeDiffPct = function(n, firstDate, secondDate, stocks_2005) {
   #   stocks_2005: List of stock dataframes
   # 
   # Returns:
-  #   A dataframe with the difference in percentage of close values, 
+  #   A dataframe with the differences in percentage of close values, 
   #   with the stock name next to it
   
   
