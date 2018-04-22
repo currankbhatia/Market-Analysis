@@ -430,19 +430,30 @@ T
 library("bootstrap")
 # initialize
 #data(law, package = "bootstrap")
+
 n <- length(rets)
+
 y <- rets
+
 B <- 2000
+
 theta.b <- numeric(B)
 # set up storage for the sampled indices
+
 indices <- matrix(0, nrow = B, ncol = n)
 # jackknife-after-bootstrap step 1: run the bootstrap
+
 for (b in 1:B) {
+
 i <- sample(1:n, size = n, replace = TRUE)
+
 y <- rets[i]
+
 theta.b[b] <- mean(y)
 #save the indices for the jackknife
+
 indices[b,] <- i
+
 }
 
 
