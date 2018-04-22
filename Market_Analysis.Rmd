@@ -22,7 +22,7 @@ library(dplyr)
 set.seed(222)
 
 readInStocks = function(n, date1 = "2015") {
-  # Gives n random stocks from the S & P 500
+  # Gives n number of random stocks from the S & P 500
   # 
   # Args:
   #   n: Number of stocks to be read
@@ -417,7 +417,7 @@ T
 ```{r}
 library("bootstrap")
 # initialize
-data(law, package = "bootstrap")
+#data(law, package = "bootstrap")
 n <- length(rets)
 y <- rets
 B <- 2000
@@ -441,6 +441,11 @@ keep <- (1:B)[apply(indices, MARGIN = 1,
 FUN = function(k) {!any(k == i)})]
 se.jack[i] <- sd(theta.b[keep])
 }
+
+sumsq = sum((se.jack-mean(se.jack))^2)
+sejack = sqrt((n-1)/n)*sqrt(sumsq)
+
+print(sqrt(sejack))
 
 print(mean(theta.b))
 print(sd(theta.b))
