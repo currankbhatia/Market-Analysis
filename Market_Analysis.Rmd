@@ -236,7 +236,7 @@ var(readValues$rets)
 \
 
 **Group 2 Methods: MCMC**
-        	For MCMC we took a likelihood function and flooded it with data from the years 2006 to 2008 S&P 500 and then with years 2008 to 2010 S&P 500 to see the difference between “normal” stock market conditions and the stock market crash of 2008. The stock data is only being passed through the likelihood function. For each iteration after the first, the previous year’s posterior became the prior for the next year. We multiplied the updated prior by the likelihood with the current year’s data. Our equations are show below: 
+        	For MCMC we took a likelihood function and flooded it with data from the years 2006 to 2008 S&P 500 and then with years 2008 to 2010 S&P 500 to see the difference between “normal” stock market conditions and the stock market crash of 2008. The stock market data is only being passed through the likelihood function. For each iteration after the first, the previous year’s posterior became the prior for the next year. We multiplied the updated prior by the likelihood with the current year’s data. Our equations are show below: 
 
 Prior distribution: $$g({\theta},{\sigma^2}) = Normal() * InverseGamma() $$
 Likelihood function: $$L({\mu},{\sigma^2};x_1,...,x_n) = (2\pi{\sigma^2})^{-n/2}  exp({-1/{2\sigma^2}} \sum\limits_{j=1}^n (x_j - \mu)^2)$$
