@@ -1,6 +1,6 @@
 ---
 title: "Stock Market Analysis: A Stock Portfolio Predictive Model"
-author: "Aaron Gilbert, Anupriya Tripathi, Curran Bhatia, Nick Favale, Krti Tallam  "
+author: "Aaron Gilbert, Anupriya Tripathi, Curran Bhatia, Krti Tallam, Nick Favale"
 date: "Friday, May 4th, 2018"
 output: html_document
 ---
@@ -9,17 +9,17 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-### Introduction
-In this project, we calculated the risk of a stock investment portfolio. The question we attempted to answer is the following: ‘How accurately would we be able to predict both gains and losses of our randomly chosen stock portfolios, given what we know from our STAT 428 methods?
+## Introduction
+In this project, we calculated the risk of a stock investment portfolio. The question we attempted to answer is the following: ‘How accurately would we be able to predict both gains and losses of our randomly chosen stock portfolios, given what we know from our STAT 428 methods?'
 
-We have a stock market dataset that spans the years 2005 to 2017, from Kaggle. This dataset contains the following predictors/variables: Date, Open, High, Low, Close, Volume, OpenInt (open interest) of each stock from NYSE, NASDAQ, and NSYE MKT. Additionally, the prices were adjusted for both dividends and splits. Last, we calculated the return by conducting a “(Close1-Close2)/Close1” for each month or year’s given return.
+We have a stock market dataset that spans the years 2005 to 2017, from Kaggle. This dataset contains the following predictors/variables: Date, Open, High, Low, Close, Volume, OpenInt (i.e. open interest) of each stock from NYSE (New York stock market), NASDAQ, and NSYE MKT (American stock exchange). Additionally, the prices were adjusted for both dividends and splits. Finally, we calculated the return by conducting a “(Close1-Close2)/Close1” for each year’s given return.
 
-From this data, we randomly chose a portfolio of 80 stocks, where each stock had a data point for that month or year. Portfolios of stocks are essentially a grouping of financial assets – in this case, groups of stocks comprised of a single portfolio. We began with Random Number Generation (RNG), Bayesian Applications and Monte Carlo methods to generate returns and then proceeded to find the distribution of those generated returns. Finally, we used that distribution to predict gains and losses (that is, our returns) for future market conditions of the portfolios.
+From this data, we randomly choses a portfolio of 80 stocks, where each stock had a data point for that month or year. Portfolios of stocks are essentially a grouping of financial assets – in this case, groups of stocks comprised of a single portfolio. We began with Random Number Generation (RNG), Bayesian Applications and Monte Carlo methods to generate returns and then proceeded to find the distribution of those generated returns. Finally, we used that distribution to predict gains and losses (that is, our returns) for future market conditions of the portfolios.
 
-\
 
-### Methods 
-\
+
+## Methods 
+
 **Data Processing**
 \
 As stated earlier, our dataset contains all the stock market data from the years 2005 to 2017. Although this is a lot of good data, for us it was an indicator that some companies had been dissolved and new ones emerged. Each text file contains the following variables: Date, Open, High, Low, Close, Volume, and Open Interest of any given stock on any given day. For our analysis, we only needed the Close Price in order to calculate returns, so we removed all other variables.
@@ -30,7 +30,7 @@ We decided to start with March 1st, 2005 – April 1st, 2005. This is why we cre
 
 ![FIGURE 1](rawdatafile.png)
 
-It is important to note here that the names of the companies was not necessary for our analysis, so it did not affect our results or predictions. Our final dataset after processing is shown below (Figure 2).
+It is important to note here that the names of the companies were not necessary for our analysis - therefore, it did not affect our results or predictions. Our final dataset after processing is shown below (Figure 2).
 
 
 ![FIGURE 2](finaldataset.png)
@@ -49,7 +49,7 @@ library(readr)
 library(dplyr)
 ```
 
-### Read in Data
+## Read in Data
 ```{r, echo=FALSE}
 
 set.seed(222)
@@ -152,7 +152,7 @@ readInStocks = function(n, date1 = "2015") {
 ```
 
 
-### Read Difference
+## Read Difference
 ```{r, echo=FALSE}
 
 closeDiffPct = function(n, firstDate, secondDate, stocks_2005) {
@@ -208,7 +208,7 @@ closeDiffPct = function(n, firstDate, secondDate, stocks_2005) {
 ```
 
 
-### Run Code
+## Run Code
 ```{r, echo=FALSE}
 
 set.seed(679)
@@ -237,7 +237,7 @@ var(readValues$rets)
 **Group 2 Methods: MCMC**
 
 
-For our Monte Carlo Markov Chain component, we coded a likelihood function and added yearly return data from random stocks from the S&P 500. We conducted a Markov Chain from 2005 to 2008, obtaining the return between 2005 and 2006, 2006 and 2007, and 2007 and 2008. And we did the same with 2008 to 2010. We conducted this method in order to see the difference  between “normal” stock market conditions and the stock market crash of 2008. The stock data is only being passed through the likelihood function. 
+For our Monte Carlo Markov Chain component, we coded a Likelihood function and added yearly return data from random stocks from the S&P 500. We conducted a Markov Chain from 2005 to 2008, obtaining the return between 2005 and 2006, 2006 and 2007, and 2007 and 2008. And we did the same with 2008 to 2010. We conducted this method in order to see the difference  between “normal” stock market conditions and the stock market crash of 2008. The stock data is only being passed through the likelihood function. 
 
 For each iteration after the first, the previous year’s posterior became the prior for the next year. We multiplied the updated prior by the likelihood with the current year's return data. Our equations are shown below: 
 
@@ -251,7 +251,7 @@ Second Chain Posterior distribution : $$g(\theta,\sigma^2 | x_i) = L_2({\mu},{\s
 We also utilized this method to verify that stock returns follow a normal distribution for both year-on-year and month-on-month time frames. We observed this as a result of our MCMC application when the markov chain presented us with a normal distribution after multiple iterations. Normally distributed stock returns that are on average positive may seem surprising given that we analyzed the returns of randomly selected stocks – not at all what any reputable financial advisor would do, and not necessarily intuitive from an amateur investor’s point of view. Many people would make the assumption that randomly selecting stocks would result in negative returns, given the rigor with which financial institutions treat their investment portfolios. However, we were not surprised, given multiple accounts from industry professionals that selecting stocks at random results in better returns or those that are as good as carefully selected stock portfolios. David Winton Harding, founder and president of Winton Capital Management, stated in an interview with CNBC that stocks chosen at random will perform better than the S&P 500 any given time. This is the insight on which he has founded his portfolio management company.  (link: https://www.cnbc.com/2014/07/25/random-stock-picking-will-beat-sp-fund-manager.html). Additionally, Cornell University researchers published a study in which they determined that randomly investing in stocks results in the best returns (Link: https://arxiv.org/abs/1303.4351). Our goal was not to replicate these studies, but their results are imperative to the interpretation of our simulation. 
 
 
-### Results
+## Results
 \
 **RESULTS FOR GROUP 1 METHODS**
 \
@@ -320,7 +320,7 @@ This indicates that running Bayesian Applications on Monte Carlo produces a roug
 
 **Group 2 Methods: MCMC & Bootstrap and Jackknife Results**
 
-In our results for Group 2 Methods, we can see the graphs resulting from our Markov Chain. The first graph is from 2008-2010 and the other graph is from 2005-2008. From these graphs we are able to obtain the maxiumum of the distribution. The x-axis (theta) shows the percentage change in the stock market. The y-axis is capturing the percentage of companies that are exhibiting the theta change in returns. However, here we needed to adjust our C-value to capture that specifically for future analysis. 
+In our results for Group 2 Methods, we can see the graphs resulting from our Markov Chain. The first graph is from 2008-2010 and the other graph is from 2005-2008. From these graphs we are able to obtain the maxiumum of the distribution. The x-axis (theta) shows the percentage change in the stock market. The y-axis is capturing the percentage of companies that are exhibiting the theta change in returns. However, here we needed to adjust our C value to capture that specifically for future analysis. 
 
 After conducting MCMC, we conducted a Bootstrap and Jackknife analysis on our data.  
 
@@ -376,7 +376,7 @@ dates = c("2008-03-04", "2009-03-03", "2010-03-03")
 
 \
 
-This graph represents the final posterior distribution after 2008 to 2010 yearly data simulation. This distribution is the final of a Markov Chain that went from March 2008, March 2009, March 2010. As can be seen, the y-axis is not well normalized; however, its important to note that the ratio is what the S&P 500 distribution looks like. We can verify that this is accurate because the S&P 500 stock price was 1,316.94 on March 1, 2008 and was 1,152.05 on March 1, 2010. So the percent returns for this time period was about -14%. Since the peak of our curve is slightly before 0 on the x-axis we know this is accurate.
+This graph represents the final posterior distribution, after the 2008 to 2010 yearly data simulation. This distribution is the final of a Markov Chain that went through March 2008, March 2009, and March 2010. As can be seen, the y-axis is not normalized too well; however, its important to note that the ratio is what the S&P 500 distribution looks like. We can verify that this is accurate because the S&P 500 stock price was 1,316.94 on March 1, 2008 and was 1,152.05 on March 1, 2010. Therefore, the percent returns for this time period was about -14%. Since the peak of our curve falls slightly before 0 on the x-axis we know this is accurate.
 
 
 \
@@ -433,7 +433,7 @@ dates = c("2005-03-01", "2006-03-01", "2007-03-01", "2008-03-04")
 ```
 \
 
-This is another Markov Model that represents March 2005 to March 2008. Similar to the last model, the y-axis is not normalized to the extent where the values are correct, but the ratio does represent the distribution well. We can verify that this is accurate because the S&P 500 stock price was 1,194.90 on March 1, 2005 and was 1,316.94 on March 1, 2008. So the percent returns for this time period was about positive 10%. Since the peak of our curve is slightly past 0 on the x-axis we know that this is accurate.
+This is another Markov Model that represents March 2005 to March 2008. Similar to the last model, the y-axis is not normalized to the extent where the values are correct, but the ratio does represent the distribution well. We can verify that this is accurate because the S&P 500 stock price was 1,194.90 on March 1, 2005 and was 1,316.94 on March 1, 2008. So the percent returns for this time period was about positive 10%. Since the peak of our curve is slightly beyond 0 on the x-axis we know that this is accurate.
 
 \
 
@@ -465,7 +465,7 @@ T
 ```
 
 \
-In our bootstrap analysis, we found that the standard error was small (0.07) which is one factor for indicating that our model is strong.
+In our Bootstrap analysis, we found that the standard error was small (0.07). This is one factor for indicating that our model is strong.
 \
 
 ```{r, echo=FALSE}
@@ -530,25 +530,26 @@ print(sd(rets))
 ```
 
 \
-For our jackknife analysis, we got a standard deviation of (0.058) while for returns (our original data) we got a standard deviation of 0.52. This can be attributed to (ASK NICK).
+For our jackknife analysis, we got a standard deviation of (0.058) while for returns (our original data) we got a standard deviation of 0.52. This can be attributed to (**ASK NICK**).
 \
 
-###Conclusion
+## Conclusion
+\
 We verified that through our randomly selected portfolio of 80 stocks from the S&P 500 that it is reasonable to accurately estimate year on year returns for the S&P 500 based on a normal distribution. 
 
-However, we need to keep in mind that we needed to adjust our Markov Chain in order to readjust our C-value. The reason we did this was once again, to normalize our values in order to accurately analyze our distributions correctly. 
+However, we need to keep in mind that we needed to adjust our Markov Chain in order to re-adjust our C-value. The reason we did this was once again, to normalize our values in order to accurately analyze our distributions correctly. 
 
 We could not figure out why our data was breaking with a portfolio greater than 80 stocks. For some reason, our Likelihood function would return 0 for greater than 80 stocks but worked for 80. So in the future if we fixed this and are able to simulate for a larger number of stocks then our simulation would become more accurate. As a result of our lack of our inability to pick more than 80 stocks, we were not able to accurately pinpoint the theta values of the max in our distributions, which is why we simply decided to show that if the max finalPost value was past 0 on the x-axis then it was positive in the range of 0.0 to 0.3. And the same, if the max finalPost value was before 0 on the x-axis.
 
-Overall, the conclusion we can still take away from this experiment is that one can simply randomly pick stocks from the S&P 500, and they are likely to have a distribution similar to the S&P 500, and likely to have limited risk in the investment.
+Overall, the conclusion we can still take away from this experiment is that one can simply randomly pick stocks from the S&P 500, and they are likely to have a distribution similar to the S&P 500, and likely to have limited risks in the investment.
 
 
 
-### Appendices
+## Appendices
 \
 
 
-### Loading Libraries
+## Loading Libraries
 ```{r, eval = FALSE}
 
 library(stringr)
@@ -556,7 +557,7 @@ library(readr)
 library(dplyr)
 ```
 
-### Read in Data
+## Read in Data
 ```{r, eval = FALSE}
 
 
@@ -660,7 +661,7 @@ readInStocks = function(n, date1 = "2015") {
 ```
 
 
-### Read Difference
+## Read Difference
 ```{r, eval = FALSE}
 
 
@@ -723,7 +724,7 @@ Likelihood function: $$L({\mu},{\sigma^2};x_1,...,x_n) = (2\pi{\sigma^2})^{-n/2}
 Posterior distribution: $$g(\theta,\sigma^2 | x_i) = L({\mu},{\sigma^2};x_1,...,x_n) * g({\theta},{\sigma^2})$$
 
 
-###Creating First Likelihood Function
+## Creating First Likelihood Function
 ```{r, eval = FALSE}
 
 L = function(theta, x, n, sigma2 = 2){
@@ -735,7 +736,7 @@ L = function(theta, x, n, sigma2 = 2){
 ```
 
 
-### Finding Posterior and Running Code
+## Finding Posterior and Running Code
 ```{r, eval = FALSE}
 
 set.seed(679)
@@ -774,7 +775,7 @@ plot(theta, postC)
 ```
 
 
-### Markov Chain
+## Markov Chain
 ```{r, eval = FALSE}
 
 
@@ -883,7 +884,7 @@ dates = c("2005-03-01", "2006-03-01", "2007-03-01", "2008-03-04")
 
 
 
-###Bootstrap
+## Bootstrap
 ```{r, eval = FALSE}
 
 
@@ -914,7 +915,7 @@ T
 
 
 
-###Jackknife
+## Jackknife
 ```{r, eval = FALSE}
 
 
