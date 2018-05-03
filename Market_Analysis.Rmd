@@ -1,6 +1,6 @@
 ---
 title: "Stock Market Analysis: A Stock Portfolio Predictive Model"
-author: "Curran Bhatia, Anupriya Tripathi, Krti Tallam, Nick Favale, Aaron Gilbert"
+author: "Anupriya Tripathi, Aaron Gilbert, Curran Bhatia, Nick Favale, Krti Tallam"
 date: "Friday, May 4th, 2018"
 output: html_document
 ---
@@ -38,19 +38,18 @@ It is important to note here that it was not necessary for our analysis, so it d
 
 **Group 1 Methods: Bayesian Analysis**
 
-        	To begin by describing our prior distribution, we conducted a literature review and found that picking a random portfolio of stocks would give us a Normal Distribution. We thought it would be best to define our prior distribution as the Normal Distribution. Initially, we planned to define our prior distribution as Normal-Inverse Gamma. Unfortunately, it complicated our model quite significantly.  Thus, we decided to keep our variance constant.
+To begin by describing our prior distribution, we conducted a literature review and found that picking a random portfolio of stocks would give us a Normal Distribution. We thought it would be best to define our prior distribution as the Normal Distribution. Initially, we planned to define our prior distribution as Normal-Inverse Gamma. Unfortunately, it complicated our model quite significantly.  Thus, we decided to keep our variance constant.
         	
 We also graphed what our data would look like. This is shown below in Figure 3. This allowed us to create our likelihood distribution against the Normal Distribution as well. Another important factor in this was that we had to add a constant C value in order to adjust our values, so that they made sense as practical return values.
 
 
-```{r, echo=FALSE}
+```{r, echo = FALSE}
 library(stringr)
 library(readr)
 library(dplyr)
 ```
 
-### Read in Data
-```{r, echo=FALSE}
+```{r, echo = FALSE}
 
 set.seed(222)
 
@@ -70,8 +69,7 @@ readInStocks = function(n, date1 = "2015") {
   #sec100 = snp$Sector[nums]
   
    dateN = date1 %>% as.character() %>% substring(1,4) %>% as.numeric()
-   print(dateN)
-  
+
   #array = arr100
   
   
@@ -96,10 +94,6 @@ readInStocks = function(n, date1 = "2015") {
     
     arr = snp$Symbol[num]
     
-    # print("num is")
-    # print(num)
-    # print("i is")
-    # print(i)
     
     dir = c("../Stocks/", as.character(arr), ".us.txt")
     
@@ -128,11 +122,7 @@ readInStocks = function(n, date1 = "2015") {
       
       i = i-1
       
-      #print("Enters here:")
       
-      #nums = sample(1:500, n)
-      #arr100 = snp$Symbol[nums]
-      #sec100 = snp$Sector[nums]
     }
     else {
       stocks_2005[[i]] <- stock
@@ -147,14 +137,12 @@ readInStocks = function(n, date1 = "2015") {
 }
 
 
-#readInStocks(500) -> vals
 
 
 ```
 
 
-### Read Difference
-```{r, echo=FALSE}
+```{r, echo = FALSE}
 
 closeDiffPct = function(n, firstDate, secondDate, stocks_2005) {
   # Gives difference in close values from firstDate to secondDate
@@ -180,9 +168,7 @@ closeDiffPct = function(n, firstDate, secondDate, stocks_2005) {
      stock_df$Date = as.character(stock_df$Date)
      firstN = which(stock_df$Date == firstDate)
      secondN = which(stock_df$Date == secondDate)
-     #print(firstN)
-     #print(secondN)
-     
+
      if ((is.integer(firstN) && length(firstN) == 0) | 
          (is.integer(secondN) && length(secondN) == 0)) {
        
@@ -194,7 +180,6 @@ closeDiffPct = function(n, firstDate, secondDate, stocks_2005) {
      stock_close_04 <- stock_df[secondN,]$Close
      s_2005 <- (stock_close_04-stock_close_03)/stock_close_03
      
-     #print(s_2005)
      rets[i] = s_2005
      names = c(stock_df$name[1], names)
   }
@@ -209,8 +194,7 @@ closeDiffPct = function(n, firstDate, secondDate, stocks_2005) {
 ```
 
 
-### Run Code
-```{r, echo=FALSE}
+```{r, echo = FALSE}
 
 set.seed(679)
 
@@ -223,8 +207,7 @@ set.seed(679)
 
 ```
 
-###Graph Data
-```{r, echo=FALSE}
+```{r, echo = FALSE}
 
 hist(readValues$rets)
 mean(readValues$rets)
@@ -234,9 +217,9 @@ var(readValues$rets)
 
 
 \
-
+\
 **Group 2 Methods: MCMC**
-        	For MCMC we took a likelihood function and flooded it with data from the years 2006 to 2008 S&P 500 and then with years 2008 to 2010 S&P 500 to see the difference between “normal” stock market conditions and the stock market crash of 2008. The stock market data is only being passed through the likelihood function. For each iteration after the first, the previous year’s posterior became the prior for the next year. We multiplied the updated prior by the likelihood with the current year’s data. Our equations are show below: 
+        	For MCMC we took a likelihood function and flooded it with data from the years 2006 to 2008 S&P 500 and then with years 2008 to 2010 S&P 500 to see the difference between “normal” stock market conditions and the stock market crash of 2008. The stock data is only being passed through the likelihood function. For each iteration after the first, the previous year’s posterior became the prior for the next year. We multiplied the updated prior by the likelihood with the current year’s data. Our equations are show below: 
 
 Prior distribution: $$g({\theta},{\sigma^2}) = Normal() * InverseGamma() $$
 Likelihood function: $$L({\mu},{\sigma^2};x_1,...,x_n) = (2\pi{\sigma^2})^{-n/2}  exp({-1/{2\sigma^2}} \sum\limits_{j=1}^n (x_j - \mu)^2)$$
@@ -249,23 +232,9 @@ Posterior distribution: $$g(\theta,\sigma^2 | x_i) = L({\mu},{\sigma^2};x_1,...,
 Our results for our Group 1 Methods resulted in two graphs, shown below. The first graph is without a C-value (which we had to put in to put our values into context, as mentioned earlier). The Y-axis on this graph has very low values - therefore, it was necessary that we multiplied by C. We found the C-value by multiplying our Likelihood function by our Prior function. Taking the Mean of that resulting function became our Posterior. Then, we divided that by our C-value. This results in our second graph (also shown below). This contains our Posterior distribution after dividing by C. 
 
 
-```{r, echo=FALSE}
-###Prior
-# g_prior = function(x = seq(-1,1,.01), theta = 0, var1 = 1, alpha = 3, beta = 1) {
-#   #return(dnorm(x, theta, var1)*dgamma(x, alpha, beta))
-#   return(dnorm(x)*1)
-# }
 
-```
 
-```{r, echo=FALSE}
-# x <- seq(-1,1,.01)
-# hist(g_prior(x, theta, var1, alpha, beta))
-# gp = g_prior(x, theta, var1, alpha, beta)
-# plot(x,gp)
-```
-
-```{r, echo=FALSE}
+```{r, echo = FALSE}
 ###Creating First Likelihood Function
 
 L = function(theta, x, n, sigma2 = 2){
@@ -276,7 +245,7 @@ L = function(theta, x, n, sigma2 = 2){
 
 ```
 
-```{r, echo=FALSE}
+```{r, echo = FALSE}
 ### Finding Posterior and Running Code
 set.seed(679)
 
@@ -306,7 +275,7 @@ plot(theta, post)
 \
 
 \
-```{r, echo=FALSE}
+```{r, echo = FALSE}
 c = L(theta, rets, n) * gprior(rnorm(n))
 C = mean(c)
 
@@ -316,12 +285,17 @@ plot(theta, postC)
 
 ```
 
+\
+This indicates that running Bayesian Applications on Monte Carlo produces a roughly normal distribution. The postC y-axis represents a posterior distribution divided by a constant C to make normalize the data. 
+\
+
+\
 **Group 2 Methods: MCMC & Bootstrap and Jackknife Results**
 In our results for Group 2 Methods, we can see the graphs resulting from our Markov Chain. The first graph is from 2008-2010 and the other graph is from 2005-2008. From these graphs we are able to obtain the maxiumum of the distribution. The x-axis (theta) shows the percentage change in the stock market. The y-axis is capturing the percentage of companies that are exhibiting the theta change in returns. However, here we needed to adjust our C-value to capture that specifically for future analysis. 
 
 After conducting MCMC, we conducted a Bootstrap and Jackknife analysis on our data.  
 
-```{r, echo=FALSE}
+```{r, echo = FALSE}
 
 #markov = function (n, dates ) {
 
@@ -373,12 +347,12 @@ dates = c("2008-03-04", "2009-03-03", "2010-03-03")
 
 \
 
-Here we can see the maximum is below a theta value of 0. This makes sense as it was after the Stock Market Crash of 2008 and the market was still recovering. 
+This graph represents the final posterior distribution after 2008 to 2010 yearly data simulation. This is distribution is the final of a Markov Chain that went from March 2008, March 2009, March 2010. As can be seen, the y-axis is not well normalized; however, its important to note that the ratio is what the S&P 500 distribution looks like.
 
 
 \
 
-```{r, echo=FALSE}
+```{r, echo = FALSE}
 
 #markov = function (n, dates ) {
 
@@ -430,11 +404,11 @@ dates = c("2005-03-01", "2006-03-01", "2007-03-01", "2008-03-04")
 ```
 \
 
-Here we can see that the maximum is above a theta value of 0. This makes sense as it was before the Stock Market Crash of 2008.
+This is another Markov Model that represents March 2005 to March 2008. Similar to the last model, the y-axis is not normalized to the extent where the values are correct, but the ratio does represent the distribution well.
 
 \
 
-```{r, echo=FALSE}
+```{r, echo = FALSE}
 ###Bootstrap
 T = mean(rets)
 
@@ -543,7 +517,7 @@ Some future routes we can take **WHY DID OUR DATA BREAK - CURRAN AND AARON**
 ### Appendices
 \
 
-```{r echo=TRUE, include=FALSE}
+```{r, eval = FALSE}
 
 library(stringr)
 library(readr)
@@ -551,7 +525,7 @@ library(dplyr)
 ```
 
 ### Read in Data
-```{r echo=TRUE, include=FALSE}
+```{r, eval = FALSE}
 
 
 set.seed(222)
@@ -656,7 +630,7 @@ readInStocks = function(n, date1 = "2015") {
 
 
 ### Read Difference
-```{r echo=TRUE, include=FALSE}
+```{r, eval = FALSE}
 
 
 closeDiffPct = function(n, firstDate, secondDate, stocks_2005) {
@@ -712,20 +686,6 @@ closeDiffPct = function(n, firstDate, secondDate, stocks_2005) {
 ```
 
 
-### Run Code
-```{r echo=TRUE, include=FALSE}
-
-
-#set.seed(679)
-
-#Run code
- #stocks = readInStocks(250)
- #readValues = closeDiffPct(250, "2005-03-01", "2005-06-01", stocks)
- #hist(readValues$rets)
- #mean(readValues$rets)
- #var(readValues$rets)
-
-```
 
 Prior distribution: $$g({\theta},{\sigma^2}) = Normal() * InverseGamma() $$
 Likelihood function: $$L({\mu},{\sigma^2};x_1,...,x_n) = (2\pi{\sigma^2})^{-n/2}  exp({-1/{2\sigma^2}} \sum\limits_{j=1}^n (x_j - \mu)^2)$$
@@ -733,39 +693,11 @@ Posterior distribution: $$g(\theta,\sigma^2 | x_i) = L({\mu},{\sigma^2};x_1,...,
 
 
 
-###Graph Data
-```{r echo=TRUE, include=FALSE}
-
-
-# hist(readValues$rets)
-# mean(readValues$rets)
-# var(readValues$rets)
-
-```
-
-###Prior
-```{r echo=TRUE, include=FALSE}
-
-
-# g_prior = function(x = seq(-1,1,.01), theta = 0, var1 = 1, alpha = 3, beta = 1) {
-#   #return(dnorm(x, theta, var1)*dgamma(x, alpha, beta))
-#   return(dnorm(x)*1)
-# }
-
-```
-
-```{r echo=TRUE, include=FALSE}
-
-# x <- seq(-1,1,.01)
-# hist(g_prior(x, theta, var1, alpha, beta))
-# gp = g_prior(x, theta, var1, alpha, beta)
-# plot(x,gp)
-```
 
 
 
 ###Creating First Likelihood Function
-```{r echo=TRUE, include=FALSE}
+```{r, eval = FALSE}
 
 L = function(theta, x, n, sigma2 = 2){
   first = (2*pi*sigma2)^(-n/2)
@@ -777,7 +709,7 @@ L = function(theta, x, n, sigma2 = 2){
 
 
 ### Finding Posterior and Running Code
-```{r echo=TRUE, include=FALSE}
+```{r, eval = FALSE}
 
 set.seed(679)
 
@@ -816,7 +748,7 @@ plot(theta, postC)
 
 
 ### Markov Chain
-```{r echo=TRUE, include=FALSE}
+```{r, eval = FALSE}
 
 
 #markov = function (n, dates ) {
@@ -867,7 +799,7 @@ dates = c("2008-03-04", "2009-03-03", "2010-03-03")
 
 ```
 
-```{r echo=TRUE, include=FALSE}
+```{r, eval = FALSE}
 
 
 #markov = function (n, dates ) {
@@ -925,7 +857,7 @@ dates = c("2005-03-01", "2006-03-01", "2007-03-01", "2008-03-04")
 
 
 ###Bootstrap
-```{r echo=TRUE, include=FALSE}
+```{r, eval = FALSE}
 
 
 T = mean(rets)
@@ -956,7 +888,7 @@ T
 
 
 ###Jackknife
-```{r echo=TRUE, include=FALSE}
+```{r, eval = FALSE}
 
 
 library("bootstrap")
